@@ -1,6 +1,6 @@
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
-  github_id VARCHAR(255) NOT NULL
+  email VARCHAR(255) NOT NULL UNIQUE
 );
 
 CREATE TABLE user_settings (
@@ -15,5 +15,5 @@ CREATE TABLE user_settings (
     thumb_label_list VARCHAR(255),
     thumb_size_list VARCHAR(255),
     type_artwork_url VARCHAR(255),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

@@ -3,16 +3,16 @@ const { gql } = require('apollo-server');
 const userTypeDefs = gql`
   type User {
     id: ID!
-    github_id: String!
+    email: String!
   }
 
   type Query {
     users: [User]
-    user(github_id: String!): User
+    user(email: String!): User
   }
 
   type Mutation {
-    createUser(github_id: String!): User
+    createUser(email: String!): User
     deleteUser(id: ID!): Boolean
   }
 `;
@@ -23,16 +23,16 @@ const userResolvers = {
       const res = await pool.query('SELECT * FROM users');
       return res.rows;
     },
-    user: async (_, { github_id }, { pool }) => {
-      const res = await pool.query('SELECT * FROM users WHERE github_id = $1', [github_id]);
+    user: async (_, { email }, { pool }) => {
+      const res = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
       return res.rows[0];
     }
   },
   Mutation: {
-    createUser: async (_, { github_id }, { pool }) => {
+    createUser: async (_, { email }, { pool }) => {
       const res = await pool.query(
-        'INSERT INTO users (github_id) VALUES ($1) RETURNING *',
-        [github_id]
+        'INSERT INTO users (email) VALUES ($1) ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email RETURNING *',
+        [email]
       );
       return res.rows[0];
     },

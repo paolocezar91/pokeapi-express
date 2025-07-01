@@ -9,24 +9,48 @@ export function userRoutes(app: express.Express) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   };
 
-  app.get('/api/user/:github_id', async (
-    req: express.Request<{ github_id: string }>,
+  app.get('/api/user/:email', async (
+    req: express.Request<{ email: string }>,
     res: express.Response<Record<string, unknown>>
   ) => {
     cors(res);
-    const { github_id } = req.params;
+    const { email } = req.params;
     const query = gql`
       query { 
-        user(github_id: "${github_id}") {
+        user(email: "${email}") {
           id,
-          github_id
+          email
         }
       }
     `;
 
     try {
-      const data: Data = await request('http://localhost:5678/', query, { github_id });
+      const data: Data = await request('http://localhost:5678/', query, { email });
       res.json(data.user);
+    } catch (err) {
+      res.status(500).json({ error: 'GraphQL error' });
+    }
+  });
+
+   app.post('/api/user/', async (
+    req: express.Request,
+    res: express.Response<Record<string, unknown>>
+  ) => {
+    cors(res);
+    const { email } = req.body;
+    
+    const mutation = gql`
+      mutation createUser($email: String!) {
+        createUser(email: $email) {
+          id
+          email
+        }
+      }
+    `;
+
+    try {
+      const data: Data = await request('http://localhost:5678/', mutation, { email });
+      res.json(data.createUser);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error' });
     }
@@ -59,8 +83,12 @@ export function userRoutes(app: express.Express) {
 
     try {
       const data: Data = await request('http://localhost:5678/', query, { user_id });
-      const showColumn = Array.from(data.userSettings.showColumn as string).map(v => v === 'y' ? true : false)
-      res.json({...data.userSettings, showColumn });
+      if(data.userSettings) {
+        const showColumn = Array.from(data.userSettings.showColumn as string).map(v => v === 'y' ? true : false)
+        res.json({...data.userSettings, showColumn });
+      } else {
+        res.json(null)
+      }
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error' });
     }
@@ -84,10 +112,10 @@ export function userRoutes(app: express.Express) {
       thumbLabelList,
       thumbSizeList,
       typeArtworkUrl
-    } = req.body as Record<string, string | boolean>;
+    } = req.body as Record<string, string | boolean | boolean[]>;
 
     const mutation = gql`
-      mutation UpsertUserSettings($input: UserSettingsInput!) {
+      mutation upsertUserSettings($input: UserSettingsInput!) {
         upsertUserSettings(input: $input) {
           id
           user { id }
@@ -109,7 +137,7 @@ export function userRoutes(app: express.Express) {
       artworkUrl,
       descriptionLang,
       listTable,
-      showColumn,
+      showColumn: (showColumn as boolean[])?.reduce((str, bool) => str + (bool ? 'y' : 'n'), ''),
       showShowColumn,
       showThumbTable,
       thumbLabelList,
@@ -119,9 +147,10 @@ export function userRoutes(app: express.Express) {
 
     try {
       const data: Data = await request('http://localhost:5678/', mutation, { input });
-      res.json(data.upsertUserSettings);
+      data.upsertUserSettings.showColumn = Array.from(data.upsertUserSettings.showColumn as string).map(v => v === 'y' ? true : false)
+      res.json({...data.upsertUserSettings, showColumn });
     } catch (err) {
-      res.status(500).json({ error: 'GraphQL error' });
+      res.status(500).json({ error: 'GraphQL error', err });
     }
   });
 

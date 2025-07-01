@@ -1,4 +1,4 @@
-const { ApolloServer, gql } = require('apollo-server');
+const { ApolloServer } = require('apollo-server');
 const { Pool } = require('pg');
 const { userTypeDefs, userResolvers } = require('./user');
 const { userSettingsTypeDefs, userSettingsResolvers } = require('./userSettings');
