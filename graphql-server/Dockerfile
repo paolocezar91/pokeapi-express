@@ -7,6 +7,8 @@ COPY package.json package-lock.json ./
 
 RUN npm ci
 
+# Install mongodb client for seeding
+RUN npm install mongodb --save
 # Copy the rest of the application
 COPY . .
 

@@ -18,11 +18,6 @@ function isNumeric(str: string) {
 
 export function pokeapiRoutes(app: express.Express, resources: Record<string, string>, host: string) {
   const dataDir = path.join(__dirname, '../../data/api/v2');
-  const cors = (res: express.Response) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  };
-
   // Poke API abstraction
   app.get('/api/v2', (_, res: express.Response<PaginatedResponse>) => {
     res.json({
@@ -38,7 +33,6 @@ export function pokeapiRoutes(app: express.Express, resources: Record<string, st
     req: express.Request<{ resource: string }, {}, {}, { offset: string, limit: string }>,
     res: express.Response<PaginatedResponse>
   ) => {
-    cors(res);
     const { resource } = req.params;
     if (!resources[resource]) {
       res.status(404).json({
@@ -106,8 +100,6 @@ export function pokeapiRoutes(app: express.Express, resources: Record<string, st
     req: express.Request<{ resource: string; id: string }>,
     res: express.Response<Record<string, unknown>>
   ) => {
-    cors(res);
-
     const { resource, id } = req.params;
     if (!resources[resource]) {
       res.status(404).json({ error: 'Resource not found' });

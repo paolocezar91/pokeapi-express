@@ -8,30 +8,36 @@ services:
   #   volumes:
   #     - ./data:/app/data
 
-  database:
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
+  # database:
+  #   image: postgres:latest
+  #   environment:
+  #     POSTGRES_USER: admin
+  #     POSTGRES_PASSWORD: password
+  #     POSTGRES_DB: mydb
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #     - ./graphql-server/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  mongodb:
+    image: mongo:latest
     ports:
-      - "5432:5432"
+      - "27017:27017"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./graphql-server/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - mongo_data:/data/db
 
   graphql:
     build: ./graphql-server
     ports:
       - "5678:5678"
     depends_on:
-      - database
+      - mongodb
     environment:
-      DB_HOST: database
-      DB_PORT: 5432
-      DB_USER: admin
-      DB_PASSWORD: password
-      DB_NAME: mydb
+      MONGO_URL: mongodb://mongodb:27017/mydb
+    volumes:
+      - ./data:/app/data
+
 
 volumes:
-  postgres_data:
+  mongo_data:
