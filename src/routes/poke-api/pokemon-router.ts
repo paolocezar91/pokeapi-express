@@ -10,7 +10,7 @@ export function pokemonRoutes(app: express.Express) {
   ) => {
     const { id } = req.params;
     const name = isNaN(Number(id)) ? id : '';
-    console.log({id, name});
+    const params = { name, id: isNaN(Number(id)) ? undefined : Number(id) };
 
     const query = gql`
       query ($id: ID, $name: String) { 
@@ -146,22 +146,21 @@ export function pokemonRoutes(app: express.Express) {
     `;
 
     try {
-      const data: Data = await request('http://localhost:5678/', query, {name, id});
-      console.log(data.pokemon)
+      const data: Data = await request('http://localhost:5678/', query, params);
       res.json(data.pokemon);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });
     }
   });
 
-  app.get('/api/pokemon/', async (
+  app.get('/api/pokemon', async (
     req: express.Request,
     res: express.Response<Record<string, unknown>>
   ) => {
-    const { limit = 20, offset = 0 } = req.query;
+    const { limit = 20, offset = 0, name = '', types = '' } = req.query;
     const query = gql`
-      query ($limit: Int, $offset: Int) {
-        pokemonList(limit: $limit, offset: $offset) {
+      query ($limit: Int, $offset: Int, $name: String, $types: String) {
+        pokemonList(limit: $limit, offset: $offset, name: $name, types: $types) {
           id
           name
           types {
@@ -183,7 +182,9 @@ export function pokemonRoutes(app: express.Express) {
 
     const vars = {
       limit: Number(limit),
-      offset: Number(offset)
+      offset: Number(offset),
+      name,
+      types
     };
 
     try {
@@ -193,9 +194,8 @@ export function pokemonRoutes(app: express.Express) {
         count: paginatedResults.length,
         results: paginatedResults
       };
-
+      
       res.json(response);
-
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error' });
     }

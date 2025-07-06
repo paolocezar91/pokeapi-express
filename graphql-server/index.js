@@ -3,18 +3,24 @@ const mongoose = require('mongoose');
 const { userTypeDefs, userResolvers } = require('./resolvers/userResolver');
 const { userSettingsTypeDefs, userSettingsResolvers } = require('./resolvers/userSettingsResolver');
 const { pokemonTypeDefs, pokemonResolvers } = require('./resolvers/pokeApi/pokemonResolver');
+const { pokemonSpeciesTypeDefs, pokemonSpeciesResolvers } = require('./resolvers/pokeApi/pokemonSpeciesResolver');
+const { pokemonTypeTypeDefs, pokemonTypeResolvers } = require('./resolvers/pokeApi/pokemonTypeResolver');
 
 // Merge typeDefs and resolvers
 const typeDefs = [
   userTypeDefs,
   userSettingsTypeDefs,
-  pokemonTypeDefs
+  pokemonTypeDefs,
+  pokemonSpeciesTypeDefs,
+  pokemonTypeTypeDefs
 ];
 
 const resolvers = [
   userResolvers,
   userSettingsResolvers,
-  pokemonResolvers
+  pokemonResolvers,
+  pokemonSpeciesResolvers,
+  pokemonTypeResolvers
 ];
 
 async function startServer() {

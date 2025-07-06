@@ -14,7 +14,8 @@ const parseSettings = (userId: string, data: Record<string, unknown>) => {
     showThumbTable: data.showThumbTable,
     thumbLabelList: data.thumbLabelList,
     thumbSizeList: data.thumbSizeList,
-    typeArtworkUrl: data.typeArtworkUrl
+    typeArtworkUrl: data.typeArtworkUrl,
+    filter: data.filter
   };
 };
 
@@ -44,6 +45,10 @@ export function userSettingsRoutes(app: express.Express) {
           thumbLabelList
           thumbSizeList
           typeArtworkUrl
+          filter {
+            name
+            types
+          }
         }
       }
     `;
@@ -80,12 +85,17 @@ export function userSettingsRoutes(app: express.Express) {
           thumbLabelList
           thumbSizeList
           typeArtworkUrl
+          filter {
+            name
+            types
+          }
         }
       }
     `;
-
+    console.log({input})
     try {
       const data: Data = await request('http://localhost:5678/', mutation, { input });
+        console.log({data})
         res.json(serializeSettings(data.upsertUserSettings))
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });

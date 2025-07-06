@@ -135,25 +135,34 @@ const pokemonTypeDefs = gql`
   }
 
   type Query {
-    pokemonList(limit: Int, offset: Int): [Pokemon]
+    pokemonList(limit: Int, offset: Int, name: String, types: String): [Pokemon]
     pokemon(id: ID, name: String): Pokemon
   }
 `;
 
 const pokemonResolvers = {
   Query: {
-    pokemonList: async (_, { limit = 50, offset = 0 }) => {
-      return await Pokemon.find({}, { id: 1, name: 1, stats: 1, types: 1 })
+    pokemonList: async (_, { limit = 50, offset = 0, name = '', types = '' }) => {
+      const projection = { id: 1, name: 1, stats: 1, types: 1 }
+      const query = { id: { $lte: 1025 } };
+
+      if(name) {
+        query.name = { $regex: name, $options: 'i' };
+      }
+      
+      if(types) {
+        query.$and = types.split(",").map((type) => ({ "types.type.name": type }))
+      }
+      
+      return await Pokemon.find(query, projection)
         .skip(offset)
         .limit(limit)
+        .sort({id: 1})
         .lean();
     },
     pokemon: async (_, { id, name }) => {
       const query = name ? { name } : { id };
-      console.log(query);
-      const pokemon = await Pokemon.findOne(query).lean();
-      console.log({pokemon});
-      return pokemon;
+      return await Pokemon.findOne(query).lean();
     },
   },
 };

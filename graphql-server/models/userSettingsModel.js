@@ -10,7 +10,11 @@ const userSettingsSchema = new mongoose.Schema({
   show_thumb_table: Boolean,
   thumb_label_list: String,
   thumb_size_list: String,
-  type_artwork_url: String
+  type_artwork_url: String,
+  filter: {
+    name: String,
+    types: String
+  }
 });
 
 module.exports = mongoose.model('UserSettings', userSettingsSchema);

@@ -3,6 +3,11 @@ const UserSettings = require('../models/userSettingsModel');
 const User = require('../models/userModel');
 
 const userSettingsTypeDefs = gql`
+  type Filter {
+    name: String
+    types: String
+  }
+
   type UserSettings {
     id: ID!
     user: User
@@ -15,6 +20,12 @@ const userSettingsTypeDefs = gql`
     thumbLabelList: String
     thumbSizeList: String
     typeArtworkUrl: String
+    filter: Filter
+  }
+
+  input FilterInput {
+    name: String
+    types: String
   }
 
   input UserSettingsInput {
@@ -28,6 +39,7 @@ const userSettingsTypeDefs = gql`
     thumbLabelList: String
     thumbSizeList: String
     typeArtworkUrl: String
+    filter: FilterInput
   }
 
   type Query {
@@ -58,7 +70,8 @@ const userSettingsResolvers = {
         show_thumb_table: rest.showThumbTable,
         thumb_label_list: rest.thumbLabelList,
         thumb_size_list: rest.thumbSizeList,
-        type_artwork_url: rest.typeArtworkUrl
+        type_artwork_url: rest.typeArtworkUrl,
+        filter: rest.filter
       };
       // Remove undefined fields
       Object.keys(update).forEach(key => update[key] === undefined && delete update[key]);
@@ -84,7 +97,8 @@ const userSettingsResolvers = {
     showThumbTable: parent => parent.show_thumb_table,
     thumbLabelList: parent => parent.thumb_label_list,
     thumbSizeList: parent => parent.thumb_size_list,
-    typeArtworkUrl: parent => parent.type_artwork_url
+    typeArtworkUrl: parent => parent.type_artwork_url,
+    filter: parent => parent.filter
   }
 };
 
