@@ -1,10 +1,11 @@
 const { ApolloServer } = require('apollo-server');
 const mongoose = require('mongoose');
-const { userTypeDefs, userResolvers } = require('./resolvers/userResolver');
-const { userSettingsTypeDefs, userSettingsResolvers } = require('./resolvers/userSettingsResolver');
-const { pokemonTypeDefs, pokemonResolvers } = require('./resolvers/pokeApi/pokemonResolver');
-const { pokemonSpeciesTypeDefs, pokemonSpeciesResolvers } = require('./resolvers/pokeApi/pokemonSpeciesResolver');
-const { pokemonTypeTypeDefs, pokemonTypeResolvers } = require('./resolvers/pokeApi/pokemonTypeResolver');
+const { userTypeDefs, userResolvers } = require('./resolvers/user/user.resolver');
+const { userSettingsTypeDefs, userSettingsResolvers } = require('./resolvers/user/user-settings.resolver');
+const { pokemonTypeDefs, pokemonResolvers } = require('./resolvers/poke-api/pokemon.resolver');
+const { pokemonSpeciesTypeDefs, pokemonSpeciesResolvers } = require('./resolvers/poke-api/pokemon-species.resolver');
+const { typesTypeDefs, typesResolvers } = require('./resolvers/poke-api/types.resolver');
+const { movesTypeDefs, movesResolvers  } = require('./resolvers/poke-api/moves.resolver');
 
 // Merge typeDefs and resolvers
 const typeDefs = [
@@ -12,7 +13,8 @@ const typeDefs = [
   userSettingsTypeDefs,
   pokemonTypeDefs,
   pokemonSpeciesTypeDefs,
-  pokemonTypeTypeDefs
+  typesTypeDefs,
+  movesTypeDefs
 ];
 
 const resolvers = [
@@ -20,7 +22,8 @@ const resolvers = [
   userSettingsResolvers,
   pokemonResolvers,
   pokemonSpeciesResolvers,
-  pokemonTypeResolvers
+  typesResolvers,
+  movesResolvers
 ];
 
 async function startServer() {
@@ -32,7 +35,6 @@ async function startServer() {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    // context: () => ({}) // Only needed if you want to pass custom context
   });
 
   server.listen({ port: 5678 }).then(({ url }) => {

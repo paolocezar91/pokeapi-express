@@ -87,32 +87,16 @@ export function pokemonRoutes(app: express.Express) {
               dream_world {
                 front_default
                 front_female
-                front_shiny
-                front_shiny_female
-                back_default
-                back_female
-                back_shiny
-                back_shiny_female
               }
               home {
                 front_default
                 front_female
                 front_shiny
                 front_shiny_female
-                back_default
-                back_female
-                back_shiny
-                back_shiny_female
               }
               official_artwork {
                 front_default
-                front_female
                 front_shiny
-                front_shiny_female
-                back_default
-                back_female
-                back_shiny
-                back_shiny_female
               }
               showdown {
                 front_default
@@ -164,7 +148,6 @@ export function pokemonRoutes(app: express.Express) {
           id
           name
           types {
-              slot
               type {
                 name
                 url
@@ -196,6 +179,44 @@ export function pokemonRoutes(app: express.Express) {
       };
       
       res.json(response);
+    } catch (err) {
+      res.status(500).json({ error: 'GraphQL error' });
+    }
+  });
+
+  app.get('/api/pokemon-many', async (
+    req: express.Request,
+    res: express.Response<Record<string, unknown>>
+  ) => {
+    const { ids = '' } = req.query;
+
+    const query = gql`
+      query ($ids: [ID]) {
+        pokemonMany(ids: $ids) {
+          id
+          name
+          types {
+              type {
+                name
+                url
+            }
+          }
+          stats {
+              base_stat
+              stat {
+                  name
+              }
+          }
+        }
+      }
+    `;
+
+    // parsing to match graphql
+    const vars = { ids: (ids as string).split(',') };
+
+    try {
+      const data: Data = await request('http://localhost:5678/', query, vars);
+      res.json(data.pokemonMany);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error' });
     }

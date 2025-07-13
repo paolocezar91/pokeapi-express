@@ -1,5 +1,15 @@
 const { gql } = require('apollo-server');
-const PokemonSpecies = require('../../models/pokeApi/pokemonSpeciesModel');
+const PokemonSpecies = require('../../models/poke-api/pokemon-species.model');
+
+const pokemonSpeciesResolvers = {
+  Query: {
+    pokemonSpecies: async (_, { id, name }) => {
+      const query = name ? { name } : { id };
+      const pokemon = await PokemonSpecies.findOne(query).lean();
+      return pokemon;
+    },
+  },
+};
 
 const pokemonSpeciesTypeDefs = gql`
   type Color {
@@ -87,6 +97,11 @@ const pokemonSpeciesTypeDefs = gql`
     pokemon: VarietyPokemon
   }
 
+  type FormDescription {
+    description: String
+    language: NameLanguage
+  }
+
   type PokemonSpecies {
     base_happiness: Int
     capture_rate: Int
@@ -95,7 +110,7 @@ const pokemonSpeciesTypeDefs = gql`
     evolution_chain: EvolutionChain
     evolves_from_species: EvolvesFromSpecies
     flavor_text_entries: [FlavorTextEntry]
-    form_descriptions: [String]
+    form_descriptions: [FormDescription]
     forms_switchable: Boolean
     gender_rate: Int
     genera: [Genus]
@@ -118,15 +133,5 @@ const pokemonSpeciesTypeDefs = gql`
     pokemonSpecies(id: Int, name: String): PokemonSpecies
   }
 `;
-
-const pokemonSpeciesResolvers = {
-  Query: {
-    pokemonSpecies: async (_, { id, name }) => {
-      const query = name ? { name } : { id };
-      const pokemon = await PokemonSpecies.findOne(query).lean();
-      return pokemon;
-    },
-  },
-};
 
 module.exports = { pokemonSpeciesTypeDefs, pokemonSpeciesResolvers };

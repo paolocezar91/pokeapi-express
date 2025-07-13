@@ -26,7 +26,10 @@ export function pokemonSpeciesRoutes(app: express.Express) {
             language { name url }
             version { name url }
           }
-          form_descriptions
+          form_descriptions {
+            description
+            language { name url }
+          }
           forms_switchable
           gender_rate
           genera { genus language { name url } }

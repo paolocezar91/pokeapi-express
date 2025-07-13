@@ -14,7 +14,11 @@ const userSettingsSchema = new mongoose.Schema({
   filter: {
     name: String,
     types: String
-  }
+  },
+  sorting: [{
+    key: String,
+    dir: String
+  }]
 });
 
 module.exports = mongoose.model('UserSettings', userSettingsSchema);

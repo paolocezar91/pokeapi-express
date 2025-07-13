@@ -1,5 +1,46 @@
 const { gql } = require('apollo-server');
-const Pokemon = require('../../models/pokeApi/pokemonModel');
+const Pokemon = require('../../models/poke-api/pokemon.model');
+
+const pokemonResolvers = {
+  Query: {
+    pokemonList: async (_, { limit = 50, offset = 0, name = '', types = '' }) => {
+      const projection = { id: 1, name: 1, stats: 1, types: 1, versions: 1  }
+      const query = { id: { $lte: 1025 } };
+
+      if(name) {
+        query.name = { $regex: name, $options: 'i' };
+      }
+      
+      if(types) {
+        query.$and = types.split(",").map((type) => ({ "types.type.name": type }))
+      }
+      
+      const pokemon = await Pokemon.find(query, projection)
+        .skip(offset)
+        .limit(limit)
+        .sort({id: 1})
+        .lean();
+
+      return pokemon;
+    },
+    pokemon: async (_, { id, name }) => {
+      const query = name ? { name } : { id };
+      const pokemon = await Pokemon.findOne(query).lean();
+      if (
+        pokemon?.sprites?.other &&
+        pokemon.sprites.other["official-artwork"]
+      ) {
+        pokemon.sprites.other.official_artwork =
+          pokemon.sprites.other["official-artwork"];
+      }
+      return pokemon;
+    },
+    pokemonMany: async (_, { ids }) => {
+      const query = { id: { $lte: 1025, $in: ids.map(Number) } };
+      return await Pokemon.find(query).sort({id: 1}).lean();
+    }
+  },
+};
 
 const pokemonTypeDefs = gql`
   type AbilityDetail {
@@ -136,35 +177,9 @@ const pokemonTypeDefs = gql`
 
   type Query {
     pokemonList(limit: Int, offset: Int, name: String, types: String): [Pokemon]
+    pokemonMany(ids: [ID]): [Pokemon]
     pokemon(id: ID, name: String): Pokemon
   }
 `;
-
-const pokemonResolvers = {
-  Query: {
-    pokemonList: async (_, { limit = 50, offset = 0, name = '', types = '' }) => {
-      const projection = { id: 1, name: 1, stats: 1, types: 1 }
-      const query = { id: { $lte: 1025 } };
-
-      if(name) {
-        query.name = { $regex: name, $options: 'i' };
-      }
-      
-      if(types) {
-        query.$and = types.split(",").map((type) => ({ "types.type.name": type }))
-      }
-      
-      return await Pokemon.find(query, projection)
-        .skip(offset)
-        .limit(limit)
-        .sort({id: 1})
-        .lean();
-    },
-    pokemon: async (_, { id, name }) => {
-      const query = name ? { name } : { id };
-      return await Pokemon.findOne(query).lean();
-    },
-  },
-};
 
 module.exports = { pokemonTypeDefs, pokemonResolvers };
