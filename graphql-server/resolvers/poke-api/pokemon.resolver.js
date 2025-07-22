@@ -3,7 +3,7 @@ const Pokemon = require('../../models/poke-api/pokemon.model');
 
 const pokemonResolvers = {
   Query: {
-    pokemonList: async (_, { limit = 50, offset = 0, name = '', types = '' }) => {
+    pokemons: async (_, { limit = 50, offset = 0, name = '', types = '' }) => {
       const projection = { id: 1, name: 1, stats: 1, types: 1, versions: 1  }
       const query = { id: { $lte: 1025 } };
 
@@ -23,7 +23,7 @@ const pokemonResolvers = {
 
       return pokemon;
     },
-    pokemon: async (_, { id, name }) => {
+    pokemonById: async (_, { id, name }) => {
       const query = name ? { name } : { id };
       const pokemon = await Pokemon.findOne(query).lean();
       if (
@@ -35,8 +35,8 @@ const pokemonResolvers = {
       }
       return pokemon;
     },
-    pokemonMany: async (_, { ids }) => {
-      const query = { id: { $lte: 1025, $in: ids.map(Number) } };
+    pokemonsByIds: async (_, { ids }) => {
+      const query = { id: { $in: ids.map(Number) } };
       return await Pokemon.find(query).sort({id: 1}).lean();
     }
   },
@@ -176,9 +176,9 @@ const pokemonTypeDefs = gql`
   }
 
   type Query {
-    pokemonList(limit: Int, offset: Int, name: String, types: String): [Pokemon]
-    pokemonMany(ids: [ID]): [Pokemon]
-    pokemon(id: ID, name: String): Pokemon
+    pokemons(limit: Int, offset: Int, name: String, types: String): [Pokemon]
+    pokemonsByIds(ids: [ID]): [Pokemon]
+    pokemonById(id: ID, name: String): Pokemon
   }
 `;
 

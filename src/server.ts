@@ -2,6 +2,9 @@ import express from 'express';
 import { getResources } from './schema.ts';
 import { setRoutes } from './router.ts';
 import cors from 'cors';
+import dotenv from 'dotenv';
+dotenv.config();
+console.log(process.env.GRAPHQL_URL);
 
 const app = express();
 app.use(express.json());

@@ -4,13 +4,13 @@ import { request, gql } from 'graphql-request';
 type Data = Record<string, Record<string, unknown>>;
 
 export function typesRoutes(app: express.Express) {
-  app.get('/api/type/:id', async (
+  app.get('/api/types/:id', async (
     req: express.Request<{ id: string }>,
     res: express.Response<Record<string, unknown>>
   ) => {
     const { id } = req.params;
     const name = isNaN(Number(id)) ? id : '';
-    const params = { name, id: isNaN(Number(id)) ? undefined : Number(id) }
+    const queryParams = { name, id: isNaN(Number(id)) ? undefined : Number(id) }
     const query = gql`
       query ($id: Int, $name: String) {
         pokemonType(id: $id, name: $name) {
@@ -24,7 +24,7 @@ export function typesRoutes(app: express.Express) {
       }
     `;
     try {
-      const data: Data = await request('http://localhost:5678/', query, params);
+      const data: Data = await request(process.env.GRAPHQL_URL, query, params);
       // data.pokemonType = { ...data.pokemonType, pokemon: data.pokemonType.pokemon.map(p => p.pokemon) }
       res.json(data.pokemonType);
     } catch (err) {
@@ -46,7 +46,7 @@ export function typesRoutes(app: express.Express) {
     `;
 
     try {
-      const data: Data = await request('http://localhost:5678/', query, {});
+      const data: Data = await request(process.env.GRAPHQL_URL, query, {});
       res.json(data.types);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });

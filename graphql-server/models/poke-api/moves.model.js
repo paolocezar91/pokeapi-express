@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { namedApiResourceSchema } = require('./utils.js');
 
 const movesSchema = new mongoose.Schema({
   id: Number,
@@ -6,30 +7,29 @@ const movesSchema = new mongoose.Schema({
   power: Number,
   accuracy: Number,
   pp: Number,
-  learned_by_pokemon: [{
-    name: String,
-    url: String
-  }],
-  target: {
-    name: String,
-    url: String
-  },
+  learned_by_pokemon: [namedApiResourceSchema],
+  target: namedApiResourceSchema,
   flavor_text_entries: [{
       flavor_text: String,
       language: { name: String },
       version_group: { name: String }
   }],
-  type: {
-    name: String,
-    url: String
-  },
+  type: namedApiResourceSchema,
   damage_class: {
     name: String
   },
   effect_entries: [{
     language: { name: String },
     effect: String
-  }]
+  }],
+  machines: [
+    {
+      machine: {
+        url: String
+      },
+      version_group: namedApiResourceSchema
+    }
+  ]
 }, { collection: 'moves' });
 
 module.exports = mongoose.model('Moves', movesSchema);

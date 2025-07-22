@@ -3,6 +3,7 @@ import { request, gql } from 'graphql-request';
 
 type Data = Record<string, Record<string, unknown>>;
 
+
 export function userRoutes(app: express.Express) {
   app.get('/api/user/:email', async (
     req: express.Request<{ email: string }>,
@@ -17,9 +18,9 @@ export function userRoutes(app: express.Express) {
         }
       }
     `;
-
+    const queryParams = { email };
     try {
-      const data: Data = await request('http://localhost:5678/', query, { email });
+      const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
       res.json(data.user);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error' });
@@ -42,7 +43,7 @@ export function userRoutes(app: express.Express) {
     `;
 
     try {
-      const data: Data = await request('http://localhost:5678/', mutation, { email });
+      const data: Data = await request(process.env.GRAPHQL_URL, mutation, { email });
       res.json(data.createUser);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error' });

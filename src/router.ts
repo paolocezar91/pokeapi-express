@@ -1,11 +1,12 @@
 import express from 'express';
 import { pokeapiRoutes } from './routes/poke-api-local.ts';
-import { userRoutes } from './routes/user.ts';
-import { userSettingsRoutes } from './routes/user-settings.ts';
+import { userRoutes } from './routes/user-routes/user.ts';
+import { userSettingsRoutes } from './routes/user-routes/settings.ts';
 import { pokemonRoutes } from './routes/poke-api-routes/pokemon.ts';
 import { pokemonSpeciesRoutes } from './routes/poke-api-routes/pokemon-species.ts';
 import { typesRoutes } from './routes/poke-api-routes/types.ts';
 import { movesRoutes } from './routes/poke-api-routes/moves.ts';
+import { evolutionChainRoutes } from './routes/poke-api-routes/evolution-chain.ts';
 
 
 export const setRoutes = (
@@ -18,6 +19,7 @@ export const setRoutes = (
   pokemonSpeciesRoutes(app);
   typesRoutes(app);
   movesRoutes(app);
+  evolutionChainRoutes(app);
   userRoutes(app);
   userSettingsRoutes(app);
   return app;

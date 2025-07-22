@@ -6,6 +6,7 @@ const { pokemonTypeDefs, pokemonResolvers } = require('./resolvers/poke-api/poke
 const { pokemonSpeciesTypeDefs, pokemonSpeciesResolvers } = require('./resolvers/poke-api/pokemon-species.resolver');
 const { typesTypeDefs, typesResolvers } = require('./resolvers/poke-api/types.resolver');
 const { movesTypeDefs, movesResolvers  } = require('./resolvers/poke-api/moves.resolver');
+const { evolutionChainResolvers, evolutionChainTypeDefs } = require('./resolvers/poke-api/evolution-chain.resolver');
 
 // Merge typeDefs and resolvers
 const typeDefs = [
@@ -14,7 +15,8 @@ const typeDefs = [
   pokemonTypeDefs,
   pokemonSpeciesTypeDefs,
   typesTypeDefs,
-  movesTypeDefs
+  movesTypeDefs,
+  evolutionChainTypeDefs
 ];
 
 const resolvers = [
@@ -23,7 +25,8 @@ const resolvers = [
   pokemonResolvers,
   pokemonSpeciesResolvers,
   typesResolvers,
-  movesResolvers
+  movesResolvers,
+  evolutionChainResolvers
 ];
 
 async function startServer() {

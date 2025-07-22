@@ -10,10 +10,10 @@ export function movesRoutes(app: express.Express) {
   ) => {
     const { id } = req.params;
     const name = isNaN(Number(id)) ? id : '';
-    const params = { name, id: isNaN(Number(id)) ? undefined : Number(id) }
+    const queryParams = { name, id: isNaN(Number(id)) ? undefined : Number(id) }
     const query = gql`
       query ($id: Int, $name: String) {
-        move(id: $id, name: $name) {
+        moveById(id: $id, name: $name) {
           id
           name
           id
@@ -55,63 +55,81 @@ export function movesRoutes(app: express.Express) {
       }
     `;
     try {
-      const data: Data = await request('http://localhost:5678/', query, params);
-      // data.pokemonType = { ...data.pokemonType, pokemon: data.pokemonType.pokemon.map(p => p.pokemon) }
-      res.json(data.move);
+      const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });
     }
   });
 
   app.get('/api/moves', async (
-    _,
-    res: express.Response<Record<string, unknown>>
-  ) => {
-    const query = gql`
-      query {
-        moves {
-          id
-          name
-        }
-      }
-    `;
-
-    try {
-      const data: Data = await request('http://localhost:5678/', query, {});
-      res.json(data.moves);
-    } catch (err) {
-      res.status(500).json({ error: 'GraphQL error', err });
-    }
-  });
-
-  app.get('/api/pokemon-many', async (
     req: express.Request,
     res: express.Response<Record<string, unknown>>
   ) => {
     const { ids = '' } = req.query;
-
-    const query = gql`
-      query ($ids: [ID]) {
-        movesMany(ids: $ids) {
-          id
-          name
-          power
-          pp
-          damage_class {
+    if(!ids) {
+      const query = gql`
+        query {
+          moves {
+            id
             name
           }
         }
+      `;
+  
+      try {
+        const data: Data = await request(process.env.GRAPHQL_URL, query, {});
+        const response = {
+          count: data.moves.length,
+          results: data.moves
+        };
+        
+        res.json(response);
+      } catch (err) {
+        res.status(500).json({ error: 'GraphQL error', err });
       }
-    `;
-
-    // parsing to match graphql
-    const vars = { ids: (ids as string).split(',') };
-
-    try {
-      const data: Data = await request('http://localhost:5678/', query, vars);
-      res.json(data.movesMany);
-    } catch (err) {
-      res.status(500).json({ error: 'GraphQL error' });
+    } else {
+      const query = gql`
+        query ($ids: [ID]) {
+          movesByIds(ids: $ids) {
+            id
+            name
+            power
+            pp
+            accuracy
+            damage_class {
+              name
+            }
+            type {
+              name
+              url
+            }
+            machines {
+              machine {
+                url
+              }
+              version_group {
+                name
+                url
+              }
+            }
+          }
+        }
+      `;
+  
+      // parsing to match graphql
+      const queryParams = { ids: (ids as string).split(',') };
+  
+      try {
+        const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
+        const response = {
+          count: data.movesByIds.length,
+          results: data.movesByIds
+        };
+        
+        res.json(response);
+      } catch (err) {
+        res.status(500).json({ error: 'GraphQL error', err });
+      }
     }
   });
 

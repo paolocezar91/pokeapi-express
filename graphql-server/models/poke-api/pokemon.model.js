@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { namedApiResourceSchema } = require('./utils.js');
 
 const pokemonSchema = new mongoose.Schema({
   id: Number,
@@ -11,10 +12,7 @@ const pokemonSchema = new mongoose.Schema({
   location_area_encounters: String,
   abilities: [
     {
-      ability: {
-        name: String,
-        url: String
-      },
+      ability: namedApiResourceSchema,
       is_hidden: Boolean,
       slot: Number
     }
@@ -23,39 +21,22 @@ const pokemonSchema = new mongoose.Schema({
     latest: String,
     legacy: String
   },
-  forms: [
-    {
-      name: String,
-      url: String
-    }
-  ],
+  forms: [namedApiResourceSchema],
   game_indices: [
     {
       game_index: Number,
-      version: {
-        name: String,
-        url: String
-      }
+      version: namedApiResourceSchema
     }
   ],
   moves: [
     {
-      move: {
-        name: String,
-        url: String
-      },
+      move: namedApiResourceSchema,
       version_group_details: [
         {
           level_learned_at: Number,
-          move_learn_method: {
-            name: String,
-            url: String
-          },
+          move_learn_method: namedApiResourceSchema,
           order: Number,
-          version_group: {
-            name: String,
-            url: String
-          }
+          version_group: namedApiResourceSchema
         }
       ]
     }
@@ -69,35 +50,23 @@ const pokemonSchema = new mongoose.Schema({
           slot: Number
         }
       ],
-      generation: {
-        name: String,
-        url: String
-      }
+      generation: namedApiResourceSchema
     }
   ],
   past_types: [mongoose.Schema.Types.Mixed],
-  species: {
-    name: String,
-    url: String
-  },
+  species: namedApiResourceSchema,
   sprites: mongoose.Schema.Types.Mixed,
   stats: [
     {
       base_stat: Number,
       effort: Number,
-      stat: {
-        name: String,
-        url: String
-      }
+      stat: namedApiResourceSchema
     }
   ],
   types: [
     {
       slot: Number,
-      type: {
-        name: String,
-        url: String
-      }
+      type: namedApiResourceSchema
     }
   ]
 }, { collection: 'pokemon' });

@@ -1,36 +1,20 @@
 const mongoose = require('mongoose');
+const { namedApiResourceSchema } = require('./utils.js');
 
 const pokemonSpeciesSchema = new mongoose.Schema({
   base_happiness: Number,
   capture_rate: Number,
-  color: {
-    name: String,
-    url: String
-  },
-  egg_groups: [
-    {
-      name: String,
-      url: String
-    }
-  ],
+  color: namedApiResourceSchema,
+  egg_groups: [namedApiResourceSchema],
   evolution_chain: {
     url: String
   },
-  evolves_from_species: {
-    name: String,
-    url: String
-  },
+  evolves_from_species: namedApiResourceSchema,
   flavor_text_entries: [
     {
       flavor_text: String,
-      language: {
-        name: String,
-        url: String
-      },
-      version: {
-        name: String,
-        url: String
-      }
+      language: namedApiResourceSchema,
+      version: namedApiResourceSchema
     }
   ],
   form_descriptions: [mongoose.Schema.Types.Mixed],
@@ -39,24 +23,12 @@ const pokemonSpeciesSchema = new mongoose.Schema({
   genera: [
     {
       genus: String,
-      language: {
-        name: String,
-        url: String
-      }
+      language: namedApiResourceSchema
     }
   ],
-  generation: {
-    name: String,
-    url: String
-  },
-  growth_rate: {
-    name: String,
-    url: String
-  },
-  habitat: {
-    name: String,
-    url: String
-  },
+  generation: namedApiResourceSchema,
+  growth_rate: namedApiResourceSchema,
+  habitat: namedApiResourceSchema,
   has_gender_differences: Boolean,
   hatch_counter: Number,
   id: Number,
@@ -66,24 +38,15 @@ const pokemonSpeciesSchema = new mongoose.Schema({
   name: String,
   names: [
     {
-      language: {
-        name: String,
-        url: String
-      },
+      language: namedApiResourceSchema,
       name: String
     }
   ],
-  shape: {
-    name: String,
-    url: String
-  },
+  shape: namedApiResourceSchema,
   varieties: [
     {
       is_default: Boolean,
-      pokemon: {
-        name: String,
-        url: String
-      }
+      pokemon: namedApiResourceSchema
     }
   ]
 }, { collection: 'pokemon-species' });

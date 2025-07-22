@@ -27,7 +27,7 @@ const serializeSettings = (data: Record<string, unknown>) => {
 
 
 export function userSettingsRoutes(app: express.Express) {
-  app.get('/api/user/:user_id/settings', async (
+  app.get('/api/settings/:user_id', async (
     req: express.Request<{ user_id: string }>,
     res: express.Response<Record<string, unknown>>
   ) => {
@@ -52,8 +52,9 @@ export function userSettingsRoutes(app: express.Express) {
       }
     `;
 
+    const queryParams = { user_id };
     try {
-      const data: Data = await request('http://localhost:5678/', query, { user_id });
+      const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
       if(data.userSettings) {
         res.json(serializeSettings(data.userSettings))
       } else {
@@ -64,7 +65,7 @@ export function userSettingsRoutes(app: express.Express) {
     }
   });
 
-  app.post('/api/user/:user_id/settings', async (
+  app.post('/api/settings/:user_id', async (
     req: express.Request<{ user_id: string }, {}, Record<string, unknown>>,
     res: express.Response<Record<string, unknown>>
   ) => {
@@ -90,7 +91,7 @@ export function userSettingsRoutes(app: express.Express) {
       }
     `;
     try {
-      const data: Data = await request('http://localhost:5678/', mutation, { input });
+      const data: Data = await request(process.env.GRAPHQL_URL, mutation, { input });
       res.json(serializeSettings(data.upsertUserSettings))
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });

@@ -10,11 +10,9 @@ export function pokemonRoutes(app: express.Express) {
   ) => {
     const { id } = req.params;
     const name = isNaN(Number(id)) ? id : '';
-    const params = { name, id: isNaN(Number(id)) ? undefined : Number(id) };
-
     const query = gql`
       query ($id: ID, $name: String) { 
-        pokemon(id: $id, name: $name) {
+        pokemonById(id: $id, name: $name) {
           id
           name
           base_experience
@@ -128,10 +126,11 @@ export function pokemonRoutes(app: express.Express) {
         }
       }
     `;
+    const queryParams = { name, id: isNaN(Number(id)) ? undefined : Number(id) };
 
     try {
-      const data: Data = await request('http://localhost:5678/', query, params);
-      res.json(data.pokemon);
+      const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
+      res.json(data.pokemonById);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });
     }
@@ -141,87 +140,91 @@ export function pokemonRoutes(app: express.Express) {
     req: express.Request,
     res: express.Response<Record<string, unknown>>
   ) => {
-    const { limit = 20, offset = 0, name = '', types = '' } = req.query;
-    const query = gql`
-      query ($limit: Int, $offset: Int, $name: String, $types: String) {
-        pokemonList(limit: $limit, offset: $offset, name: $name, types: $types) {
-          id
-          name
-          types {
-              type {
-                name
-                url
-            }
-          }
-          stats {
-              base_stat
-              stat {
-                  name
-              }
-          }
-        }
-      }
-    `;
-
-    const vars = {
-      limit: Number(limit),
-      offset: Number(offset),
-      name,
-      types
-    };
-
-    try {
-      const data: Data = await request('http://localhost:5678/', query, vars);
-      const paginatedResults = data.pokemonList;
-      const response = {
-        count: paginatedResults.length,
-        results: paginatedResults
-      };
-      
-      res.json(response);
-    } catch (err) {
-      res.status(500).json({ error: 'GraphQL error' });
-    }
-  });
-
-  app.get('/api/pokemon-many', async (
-    req: express.Request,
-    res: express.Response<Record<string, unknown>>
-  ) => {
     const { ids = '' } = req.query;
 
-    const query = gql`
-      query ($ids: [ID]) {
-        pokemonMany(ids: $ids) {
-          id
-          name
-          types {
-              type {
-                name
-                url
+    if(!ids) {
+      const { limit = 20, offset = 0, name = '', types = '' } = req.query;
+      const query = gql`
+        query ($limit: Int, $offset: Int, $name: String, $types: String) {
+          pokemons(limit: $limit, offset: $offset, name: $name, types: $types) {
+            id
+            name
+            types {
+                type {
+                  name
+                  url
+              }
+            }
+            stats {
+                base_stat
+                stat {
+                    name
+                }
             }
           }
-          stats {
-              base_stat
-              stat {
+        }
+      `;
+  
+      const queryParams = {
+        limit: Number(limit),
+        offset: Number(offset),
+        name,
+        types
+      };
+  
+      try {
+        const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
+        const response = {
+          count: data.pokemons.length,
+          results: data.pokemons
+        };
+        
+        res.json(response);
+      } catch (err) {
+        res.status(500).json({ error: 'GraphQL error' });
+      }
+    } else {
+      const query = gql`
+        query ($ids: [ID]) {
+          pokemonsByIds(ids: $ids) {
+            id
+            name
+            types {
+                type {
                   name
+                  url
               }
+            }
+            stats {
+                base_stat
+                stat {
+                    name
+                }
+            }
+            forms {
+              name
+              url
+            }
           }
         }
+      `;
+  
+      // parsing to match graphql
+      const queryParams = { ids: (ids as string).split(',') };
+  
+      try {
+        const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
+        const response = {
+          count: data.pokemonsByIds.length,
+          results: data.pokemonsByIds
+        };
+        
+        res.json(response);
+      } catch (err) {
+        res.status(500).json({ error: 'GraphQL error' });
       }
-    `;
-
-    // parsing to match graphql
-    const vars = { ids: (ids as string).split(',') };
-
-    try {
-      const data: Data = await request('http://localhost:5678/', query, vars);
-      res.json(data.pokemonMany);
-    } catch (err) {
-      res.status(500).json({ error: 'GraphQL error' });
     }
   });
-
 
   return app;
 }

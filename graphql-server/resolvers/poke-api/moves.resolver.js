@@ -7,12 +7,12 @@ const movesResolvers = {
       const moves = await Moves.find().lean();
       return moves;
     },
-    move: async (_, { id, name }) => {
+    moveById: async (_, { id, name }) => {
       const query = name ? { name } : { id };
       const move = await Moves.findOne(query).lean();
       return move;
     },
-    movesMany: async (_, { ids }) => {
+    movesByIds: async (_, { ids }) => {
       const query = { id: { $in: ids.map(Number) } };
       return await Moves.find(query).sort({id: 1}).lean();
     }
@@ -20,12 +20,7 @@ const movesResolvers = {
 };
 
 const movesTypeDefs = gql`
-  type LearnedByPokemon {
-    name: String
-    url: String
-  }
-
-  type Target {
+  type NamedApiResource {
     name: String
     url: String
   }
@@ -44,11 +39,6 @@ const movesTypeDefs = gql`
     version_group: VersionGroup
   }
 
-  type Type {
-    name: String
-    url: String
-  }
-
   type DamageClass {
     name: String
   }
@@ -58,24 +48,34 @@ const movesTypeDefs = gql`
     effect: String
   }
 
+  type MachineDetails {
+    url: String
+  }
+
+  type Machine {
+    machine: MachineDetails
+    version_group: NamedApiResource
+  }
+
   type Move {
     id: Int
     name: String
     power: Int
     accuracy: Int
     pp: Int
-    learned_by_pokemon: [LearnedByPokemon]
-    target: Target
+    learned_by_pokemon: [NamedApiResource]
+    target: NamedApiResource
     flavor_text_entries: [FlavorTextEntries]
-    type: Type
+    type: NamedApiResource
     damage_class: DamageClass
     effect_entries: [EffectEntries]
+    machines: [Machine]
   }
 
   type Query {
     moves: [Move]
-    movesMany(ids: [ID]): [Move]
-    move(id: Int, name: String): Move
+    movesByIds(ids: [ID]): [Move]
+    moveById(id: Int, name: String): Move
   }
 `;
 
