@@ -1,24 +1,12 @@
 services:
-  # express:
-  #   build: .
-  #   ports:
-  #     - "3030:3030"
-  #   depends_on:
-  #     - graphql
-  #   volumes:
-  #     - ./data:/app/data
-
-  # database:
-  #   image: postgres:latest
-  #   environment:
-  #     POSTGRES_USER: admin
-  #     POSTGRES_PASSWORD: password
-  #     POSTGRES_DB: mydb
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #     - ./graphql-server/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+  express:
+    build: .
+    ports:
+      - "3030:3030"
+    depends_on:
+      - graphql
+    volumes:
+      - ./data:/app/data
 
   mongodb:
     image: mongo:latest
@@ -36,7 +24,7 @@ services:
     environment:
       MONGO_URL: mongodb://mongodb:27017/mydb
     volumes:
-      - ./data:/app/data
+    - ./data:/app/data
 
 
 volumes:

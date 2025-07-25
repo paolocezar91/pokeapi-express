@@ -221,7 +221,7 @@ export function pokemonRoutes(app: express.Express) {
         
         res.json(response);
       } catch (err) {
-        res.status(500).json({ error: 'GraphQL error' });
+        res.status(500).json({ error: 'GraphQL error', err });
       }
     }
   });

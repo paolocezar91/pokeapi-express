@@ -7,6 +7,7 @@ import { pokemonSpeciesRoutes } from './routes/poke-api-routes/pokemon-species.t
 import { typesRoutes } from './routes/poke-api-routes/types.ts';
 import { movesRoutes } from './routes/poke-api-routes/moves.ts';
 import { evolutionChainRoutes } from './routes/poke-api-routes/evolution-chain.ts';
+import { abiltiesRoutes } from './routes/poke-api-routes/abilities.ts';
 
 
 export const setRoutes = (
@@ -22,5 +23,6 @@ export const setRoutes = (
   evolutionChainRoutes(app);
   userRoutes(app);
   userSettingsRoutes(app);
+  abiltiesRoutes(app)
   return app;
 };

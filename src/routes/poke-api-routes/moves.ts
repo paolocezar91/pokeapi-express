@@ -56,6 +56,7 @@ export function movesRoutes(app: express.Express) {
     `;
     try {
       const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
+      res.json(data.moveById);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });
     }

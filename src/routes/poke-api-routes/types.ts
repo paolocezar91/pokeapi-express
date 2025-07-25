@@ -24,8 +24,7 @@ export function typesRoutes(app: express.Express) {
       }
     `;
     try {
-      const data: Data = await request(process.env.GRAPHQL_URL, query, params);
-      // data.pokemonType = { ...data.pokemonType, pokemon: data.pokemonType.pokemon.map(p => p.pokemon) }
+      const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
       res.json(data.pokemonType);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });

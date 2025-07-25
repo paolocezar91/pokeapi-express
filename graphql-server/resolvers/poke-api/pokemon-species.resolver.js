@@ -5,8 +5,7 @@ const pokemonSpeciesResolvers = {
   Query: {
     pokemonSpecies: async (_, { id, name }) => {
       const query = name ? { name } : { id };
-      const pokemon = await PokemonSpecies.findOne(query).lean();
-      return pokemon;
+      return await PokemonSpecies.findOne(query).lean();
     },
   },
 };

@@ -9,8 +9,7 @@ const movesResolvers = {
     },
     moveById: async (_, { id, name }) => {
       const query = name ? { name } : { id };
-      const move = await Moves.findOne(query).lean();
-      return move;
+      return await Moves.findOne(query).lean();
     },
     movesByIds: async (_, { ids }) => {
       const query = { id: { $in: ids.map(Number) } };
