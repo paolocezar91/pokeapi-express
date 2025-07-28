@@ -5,9 +5,9 @@ FROM node:20
 WORKDIR /app
 
 # Copy package files and install dependencies
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json .env.sandbox ./
+RUN mv .env.sandbox .env
 RUN npm ci
-RUN npm run build
 
 # Copy the rest of the source code
 COPY ./dist ./dist
@@ -16,4 +16,4 @@ COPY ./dist ./dist
 EXPOSE 3030
 
 # Start the server
-CMD ["npm", "run", "start"]
+CMD ["node", "dist/server"]

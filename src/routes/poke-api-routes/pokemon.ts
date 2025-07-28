@@ -3,7 +3,7 @@ import { request, gql } from 'graphql-request';
 
 type Data = Record<string, Record<string, unknown>>;
 
-export function pokemonRoutes(app: express.Express) {
+export function pokemonRoutes(app: express.Express, graphqlUrl: string) {
   app.get('/api/pokemon/:id', async (
     req: express.Request<{ id: string }>,
     res: express.Response<Record<string, unknown>>
@@ -129,7 +129,7 @@ export function pokemonRoutes(app: express.Express) {
     const queryParams = { name, id: isNaN(Number(id)) ? undefined : Number(id) };
 
     try {
-      const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
+      const data: Data = await request(graphqlUrl, query, queryParams);
       res.json(data.pokemonById);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });
@@ -173,7 +173,7 @@ export function pokemonRoutes(app: express.Express) {
       };
   
       try {
-        const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
+        const data: Data = await request(graphqlUrl, query, queryParams);
         const response = {
           count: data.pokemons.length,
           results: data.pokemons
@@ -181,7 +181,7 @@ export function pokemonRoutes(app: express.Express) {
         
         res.json(response);
       } catch (err) {
-        res.status(500).json({ error: 'GraphQL error' });
+        res.status(500).json({ error: 'GraphQL error', err });
       }
     } else {
       const query = gql`
@@ -213,7 +213,7 @@ export function pokemonRoutes(app: express.Express) {
       const queryParams = { ids: (ids as string).split(',') };
   
       try {
-        const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
+        const data: Data = await request(graphqlUrl, query, queryParams);
         const response = {
           count: data.pokemonsByIds.length,
           results: data.pokemonsByIds

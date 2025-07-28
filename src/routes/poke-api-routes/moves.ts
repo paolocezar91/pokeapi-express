@@ -3,7 +3,7 @@ import { request, gql } from 'graphql-request';
 
 type Data = Record<string, Record<string, unknown>>;
 
-export function movesRoutes(app: express.Express) {
+export function movesRoutes(app: express.Express, graphqlUrl: string) {
   app.get('/api/moves/:id', async (
     req: express.Request<{ id: string }>,
     res: express.Response<Record<string, unknown>>
@@ -55,7 +55,7 @@ export function movesRoutes(app: express.Express) {
       }
     `;
     try {
-      const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
+      const data: Data = await request(graphqlUrl, query, queryParams);
       res.json(data.moveById);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });
@@ -78,7 +78,7 @@ export function movesRoutes(app: express.Express) {
       `;
   
       try {
-        const data: Data = await request(process.env.GRAPHQL_URL, query, {});
+        const data: Data = await request(graphqlUrl, query, {});
         const response = {
           count: data.moves.length,
           results: data.moves
@@ -121,7 +121,7 @@ export function movesRoutes(app: express.Express) {
       const queryParams = { ids: (ids as string).split(',') };
   
       try {
-        const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
+        const data: Data = await request(graphqlUrl, query, queryParams);
         const response = {
           count: data.movesByIds.length,
           results: data.movesByIds

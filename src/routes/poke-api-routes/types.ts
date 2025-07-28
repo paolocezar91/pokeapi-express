@@ -3,7 +3,7 @@ import { request, gql } from 'graphql-request';
 
 type Data = Record<string, Record<string, unknown>>;
 
-export function typesRoutes(app: express.Express) {
+export function typesRoutes(app: express.Express, graphqlUrl: string) {
   app.get('/api/types/:id', async (
     req: express.Request<{ id: string }>,
     res: express.Response<Record<string, unknown>>
@@ -24,7 +24,7 @@ export function typesRoutes(app: express.Express) {
       }
     `;
     try {
-      const data: Data = await request(process.env.GRAPHQL_URL, query, queryParams);
+      const data: Data = await request(graphqlUrl, query, queryParams);
       res.json(data.pokemonType);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });
@@ -45,7 +45,7 @@ export function typesRoutes(app: express.Express) {
     `;
 
     try {
-      const data: Data = await request(process.env.GRAPHQL_URL, query, {});
+      const data: Data = await request(graphqlUrl, query, {});
       res.json(data.types);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });

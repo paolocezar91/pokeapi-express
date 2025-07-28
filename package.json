@@ -6,8 +6,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "dev": "nodemon --watch src --ext ts --exec ts-node src/server.ts",
-    "start": "ts-node src/server.ts",
-    "start:build": "node dist/server.js"
+    "start": "node dist/server.js",
+    "lint": "npx eslint",
+    "lint:fix": "npx eslint --fix"
   },
   "type": "module",
   "keywords": [],
@@ -23,9 +24,16 @@
     "graphql-request": "^7.2.0"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.28.0",
+    "@eslint/js": "^9.32.0",
+    "@stylistic/eslint-plugin-ts": "^4.4.1",
     "@types/express": "^5.0.1",
     "@types/node": "^22.14.1",
+    "eslint": "^9.32.0",
+    "globals": "^16.3.0",
+    "jiti": "^2.5.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.38.0"
   }
 }

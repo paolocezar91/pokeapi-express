@@ -16,7 +16,7 @@ services:
       - mongo_data:/data/db
 
   graphql:
-    build: ./graphql-server
+    build: ../pokenext-graphql
     ports:
       - "5678:5678"
     depends_on:
