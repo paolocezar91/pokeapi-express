@@ -1,6 +1,6 @@
 import express from 'express';
 import { gql } from 'graphql-request';
-import { type ApiError, requestGraphQL } from '../utils.ts';
+import { type ApiError, requestGraphQL } from '../utils.js';
 import { type Type } from 'pokeapi-typescript';
 
 export function typesRoutes(app: express.Express) {

@@ -1,6 +1,6 @@
 import express from 'express';
 import { gql } from 'graphql-request';
-import { type ApiError, requestGraphQL } from '../utils.ts';
+import { type ApiError, requestGraphQL } from '../utils.js';
 
 export function userRoutes(app: express.Express) {
   app.get('/api/user/:email', async (

@@ -1,6 +1,6 @@
 import express from 'express';
 import { gql } from 'graphql-request';
-import { type ApiError, requestGraphQL } from '../utils.ts';
+import { type ApiError, requestGraphQL } from '../utils.js';
 
 
 
@@ -22,8 +22,11 @@ const parseSettings = (userId: string, data: Record<string, unknown>) => {
 };
 
 const serializeSettings = (data: Record<string, unknown>) => {
-  const showColumn = Array.from(data.showColumn as string).map(v => v === 'y' ? true : false)
-  return {...data, showColumn };
+  if(data.showColumn) {
+    const showColumn = Array.from(data.showColumn as string).map(v => v === 'y' ? true : false)
+    return {...data, showColumn };
+  }
+  return data;
 };
 
 
@@ -53,6 +56,8 @@ export function userSettingsRoutes(app: express.Express) {
       }
     `;
 
+    
+    
     const queryParams = { user_id };
     try {
       const data = await requestGraphQL<{userSettings: Record<string, unknown>}>(query, queryParams);
@@ -91,6 +96,7 @@ export function userSettingsRoutes(app: express.Express) {
         }
       }
     `;
+
     try {
       const data = await requestGraphQL<{upsertUserSettings: Record<string, unknown>}>(mutation, { input });
       res.json(serializeSettings(data.upsertUserSettings))

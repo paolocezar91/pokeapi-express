@@ -1,7 +1,7 @@
 import express from 'express';
 import { gql } from 'graphql-request';
 import { type Pokemon } from 'pokeapi-typescript';
-import { type ApiError, formatResultsCount, requestGraphQL, type ResultsCount } from '../utils.ts';
+import { type ApiError, formatResultsCount, requestGraphQL, type ResultsCount } from '../utils.js';
 
 export function pokemonRoutes(app: express.Express) {
   app.get('/api/pokemon/:id', async (

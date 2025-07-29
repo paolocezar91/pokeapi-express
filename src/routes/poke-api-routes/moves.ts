@@ -1,6 +1,6 @@
 import express from 'express';
 import { gql } from 'graphql-request';
-import { type ApiError, requestGraphQL, type ResultsCount } from '../utils.ts';
+import { type ApiError, requestGraphQL, type ResultsCount } from '../utils.js';
 import { type Move } from 'pokeapi-typescript';
 
 
@@ -91,7 +91,6 @@ export function movesRoutes(app: express.Express) {
         res.status(500).json({ error: 'GraphQL error', err });
       }
     } else {
-        console.log({ids})
       const query = gql`
         query ($ids: [ID]) {
           movesByIds(ids: $ids) {
