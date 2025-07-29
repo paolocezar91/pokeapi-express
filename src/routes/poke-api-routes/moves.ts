@@ -1,12 +1,14 @@
 import express from 'express';
-import { request, gql } from 'graphql-request';
+import { gql } from 'graphql-request';
+import { type ApiError, requestGraphQL, type ResultsCount } from '../utils.ts';
+import { type Move } from 'pokeapi-typescript';
 
-type Data = Record<string, Record<string, unknown>>;
 
-export function movesRoutes(app: express.Express, graphqlUrl: string) {
+
+export function movesRoutes(app: express.Express) {
   app.get('/api/moves/:id', async (
     req: express.Request<{ id: string }>,
-    res: express.Response<Record<string, unknown>>
+    res: express.Response<Move | ApiError>
   ) => {
     const { id } = req.params;
     const name = isNaN(Number(id)) ? id : '';
@@ -55,7 +57,7 @@ export function movesRoutes(app: express.Express, graphqlUrl: string) {
       }
     `;
     try {
-      const data: Data = await request(graphqlUrl, query, queryParams);
+      const data = await requestGraphQL<{moveById: Move}>(query, queryParams);
       res.json(data.moveById);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });
@@ -63,8 +65,8 @@ export function movesRoutes(app: express.Express, graphqlUrl: string) {
   });
 
   app.get('/api/moves', async (
-    req: express.Request,
-    res: express.Response<Record<string, unknown>>
+    req: express.Request<{ ids: string }>,
+    res: express.Response<ResultsCount<Move> | ApiError>
   ) => {
     const { ids = '' } = req.query;
     if(!ids) {
@@ -78,7 +80,7 @@ export function movesRoutes(app: express.Express, graphqlUrl: string) {
       `;
   
       try {
-        const data: Data = await request(graphqlUrl, query, {});
+        const data = await requestGraphQL<{moves: Move[]}>(query);
         const response = {
           count: data.moves.length,
           results: data.moves
@@ -89,6 +91,7 @@ export function movesRoutes(app: express.Express, graphqlUrl: string) {
         res.status(500).json({ error: 'GraphQL error', err });
       }
     } else {
+        console.log({ids})
       const query = gql`
         query ($ids: [ID]) {
           movesByIds(ids: $ids) {
@@ -121,7 +124,7 @@ export function movesRoutes(app: express.Express, graphqlUrl: string) {
       const queryParams = { ids: (ids as string).split(',') };
   
       try {
-        const data: Data = await request(graphqlUrl, query, queryParams);
+        const data = await requestGraphQL<{movesByIds: Move[]}>(query, queryParams);
         const response = {
           count: data.movesByIds.length,
           results: data.movesByIds

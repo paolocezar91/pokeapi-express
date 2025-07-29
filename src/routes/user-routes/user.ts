@@ -1,12 +1,11 @@
 import express from 'express';
-import { request, gql } from 'graphql-request';
+import { gql } from 'graphql-request';
+import { type ApiError, requestGraphQL } from '../utils.ts';
 
-type Data = Record<string, Record<string, unknown>>;
-
-export function userRoutes(app: express.Express, graphqlUrl: string) {
+export function userRoutes(app: express.Express) {
   app.get('/api/user/:email', async (
     req: express.Request<{ email: string }>,
-    res: express.Response<Record<string, unknown>>
+    res: express.Response<{ id: string, email: string } | ApiError>
   ) => {
     const { email } = req.params;
     const query = gql`
@@ -19,7 +18,7 @@ export function userRoutes(app: express.Express, graphqlUrl: string) {
     `;
     const queryParams = { email };
     try {
-      const data: Data = await request(graphqlUrl, query, queryParams);
+      const data = await requestGraphQL<{user: { id: string, email: string } }>(query, queryParams);
       res.json(data.user);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });
@@ -28,7 +27,7 @@ export function userRoutes(app: express.Express, graphqlUrl: string) {
 
    app.post('/api/user/', async (
     req: express.Request,
-    res: express.Response<Record<string, unknown>>
+    res: express.Response
   ) => {
     const { email } = req.body;
     
@@ -41,8 +40,8 @@ export function userRoutes(app: express.Express, graphqlUrl: string) {
       }
     `;
 
-    try {
-      const data: Data = await request(graphqlUrl, mutation, { email });
+    try { 
+      const data = await requestGraphQL<{ createUser: { id: string, email: string } }>(mutation, { email });
       res.json(data.createUser);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });

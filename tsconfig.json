@@ -10,8 +10,10 @@
     "isolatedModules": true,
     "noEmit": false,
     "outDir": "./dist",
+    "allowImportingTsExtensions": true,
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
   },
+  "include": ["src/**/*"]
 }

@@ -1,14 +1,15 @@
 import express from 'express';
-import { pokeapiRoutes } from './routes/poke-api-local.js';
-import { userRoutes } from './routes/user-routes/user.js';
-import { userSettingsRoutes } from './routes/user-routes/settings.js';
-import { pokemonRoutes } from './routes/poke-api-routes/pokemon.js';
-import { pokemonSpeciesRoutes } from './routes/poke-api-routes/pokemon-species.js';
-import { typesRoutes } from './routes/poke-api-routes/types.js';
-import { movesRoutes } from './routes/poke-api-routes/moves.js';
-import { evolutionChainRoutes } from './routes/poke-api-routes/evolution-chain.js';
-import { abiltiesRoutes } from './routes/poke-api-routes/abilities.js';
-const graphqlUrl = process.env.GRAPHQL_URL;
+import { pokeapiRoutes } from './routes/poke-api-local.ts';
+import { userRoutes } from './routes/user-routes/user.ts';
+import { userSettingsRoutes } from './routes/user-routes/settings.ts';
+import { pokemonRoutes } from './routes/poke-api-routes/pokemon.ts';
+import { pokemonSpeciesRoutes } from './routes/poke-api-routes/pokemon-species.ts';
+import { typesRoutes } from './routes/poke-api-routes/types.ts';
+import { movesRoutes } from './routes/poke-api-routes/moves.ts';
+import { evolutionChainRoutes } from './routes/poke-api-routes/evolution-chain.ts';
+import { abiltiesRoutes } from './routes/poke-api-routes/abilities.ts';
+
+
 
 export const setRoutes = (
   app: express.Express,
@@ -16,13 +17,13 @@ export const setRoutes = (
   host: string
 ) => {
   pokeapiRoutes(app, resources, host);
-  pokemonRoutes(app, graphqlUrl);
-  pokemonSpeciesRoutes(app, graphqlUrl);
-  typesRoutes(app, graphqlUrl);
-  movesRoutes(app, graphqlUrl);
-  evolutionChainRoutes(app, graphqlUrl);
-  userRoutes(app, graphqlUrl);
-  userSettingsRoutes(app, graphqlUrl);
-  abiltiesRoutes(app, graphqlUrl);
+  pokemonRoutes(app);
+  pokemonSpeciesRoutes(app);
+  typesRoutes(app);
+  movesRoutes(app);
+  evolutionChainRoutes(app);
+  userRoutes(app);
+  userSettingsRoutes(app);
+  abiltiesRoutes(app);
   return app;
 };

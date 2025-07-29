@@ -1,12 +1,12 @@
 import express from 'express';
-import { request, gql } from 'graphql-request';
+import { gql } from 'graphql-request';
+import { type Pokemon } from 'pokeapi-typescript';
+import { type ApiError, formatResultsCount, requestGraphQL, type ResultsCount } from '../utils.ts';
 
-type Data = Record<string, Record<string, unknown>>;
-
-export function pokemonRoutes(app: express.Express, graphqlUrl: string) {
+export function pokemonRoutes(app: express.Express) {
   app.get('/api/pokemon/:id', async (
     req: express.Request<{ id: string }>,
-    res: express.Response<Record<string, unknown>>
+    res: express.Response<Pokemon | ApiError>
   ) => {
     const { id } = req.params;
     const name = isNaN(Number(id)) ? id : '';
@@ -127,9 +127,9 @@ export function pokemonRoutes(app: express.Express, graphqlUrl: string) {
       }
     `;
     const queryParams = { name, id: isNaN(Number(id)) ? undefined : Number(id) };
-
+    
     try {
-      const data: Data = await request(graphqlUrl, query, queryParams);
+      const data = await requestGraphQL<{ pokemonById: Pokemon }>(query, queryParams);
       res.json(data.pokemonById);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });
@@ -137,8 +137,8 @@ export function pokemonRoutes(app: express.Express, graphqlUrl: string) {
   });
 
   app.get('/api/pokemon', async (
-    req: express.Request,
-    res: express.Response<Record<string, unknown>>
+    req: express.Request<{ ids: string }>,
+    res: express.Response<ResultsCount<Pokemon> | ApiError>
   ) => {
     const { ids = '' } = req.query;
 
@@ -173,13 +173,8 @@ export function pokemonRoutes(app: express.Express, graphqlUrl: string) {
       };
   
       try {
-        const data: Data = await request(graphqlUrl, query, queryParams);
-        const response = {
-          count: data.pokemons.length,
-          results: data.pokemons
-        };
-        
-        res.json(response);
+        const data = await requestGraphQL<{ pokemons: Pokemon[] }>(query, queryParams);        
+        res.json(formatResultsCount(data.pokemons));
       } catch (err) {
         res.status(500).json({ error: 'GraphQL error', err });
       }
@@ -213,7 +208,7 @@ export function pokemonRoutes(app: express.Express, graphqlUrl: string) {
       const queryParams = { ids: (ids as string).split(',') };
   
       try {
-        const data: Data = await request(graphqlUrl, query, queryParams);
+        const data = await requestGraphQL<{ pokemonsByIds: Pokemon[] }>(query, queryParams);
         const response = {
           count: data.pokemonsByIds.length,
           results: data.pokemonsByIds

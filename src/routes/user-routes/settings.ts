@@ -1,7 +1,8 @@
 import express from 'express';
-import { request, gql } from 'graphql-request';
+import { gql } from 'graphql-request';
+import { type ApiError, requestGraphQL } from '../utils.ts';
 
-type Data = Record<string, Record<string, unknown>>;
+
 
 const parseSettings = (userId: string, data: Record<string, unknown>) => {
   return {
@@ -26,10 +27,10 @@ const serializeSettings = (data: Record<string, unknown>) => {
 };
 
 
-export function userSettingsRoutes(app: express.Express, graphqlUrl: string) {
+export function userSettingsRoutes(app: express.Express) {
   app.get('/api/settings/:user_id', async (
     req: express.Request<{ user_id: string }>,
-    res: express.Response<Record<string, unknown>>
+    res: express.Response<Record<string, unknown> | ApiError>
   ) => {
     const { user_id } = req.params;
     const query = gql`
@@ -54,7 +55,7 @@ export function userSettingsRoutes(app: express.Express, graphqlUrl: string) {
 
     const queryParams = { user_id };
     try {
-      const data: Data = await request(graphqlUrl, query, queryParams);
+      const data = await requestGraphQL<{userSettings: Record<string, unknown>}>(query, queryParams);
       if(data.userSettings) {
         res.json(serializeSettings(data.userSettings))
       } else {
@@ -67,7 +68,7 @@ export function userSettingsRoutes(app: express.Express, graphqlUrl: string) {
 
   app.post('/api/settings/:user_id', async (
     req: express.Request<{ user_id: string }, {}, Record<string, unknown>>,
-    res: express.Response<Record<string, unknown>>
+    res: express.Response<Record<string, unknown> | ApiError>
   ) => {
     const { user_id } = req.params;
     const input = parseSettings(user_id, req.body);
@@ -91,7 +92,7 @@ export function userSettingsRoutes(app: express.Express, graphqlUrl: string) {
       }
     `;
     try {
-      const data: Data = await request(graphqlUrl, mutation, { input });
+      const data = await requestGraphQL<{upsertUserSettings: Record<string, unknown>}>(mutation, { input });
       res.json(serializeSettings(data.upsertUserSettings))
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });
