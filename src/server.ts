@@ -2,19 +2,30 @@ import express from 'express';
 import { getResources } from './schema.js';
 import { setRoutes } from './router.js';
 import cors from 'cors';
+import morgan from  'morgan';
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ path: ".env.test" });
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-const HOST = '0.0.0.0';
-const PORT = 3030;
+function run(HOST, PORT, URL, ENVIRONMENT) {
+  if(ENVIRONMENT === 'local' || ENVIRONMENT === 'test') {
+    app.use(morgan('combined'));
+  }
+  
+  const resources = getResources();
+  setRoutes(app, resources, URL);
+  
+  app.listen(PORT, HOST, () => {
+    console.log(`PokeAPI server running on ${URL} in ${ENVIRONMENT}`);
+  });
+}
 
-const resources = getResources();
-setRoutes(app, resources, `http://${HOST}:${PORT}`);
+const HOST = process.env.HOST;
+const PORT = process.env.PORT;
+const URL = `http://${HOST}:${PORT}`;
+const ENVIRONMENT = process.env.ENVIRONMENT;
 
-app.listen(PORT, HOST, () => {
-  console.log(`PokeAPI server running on http://${HOST}:${PORT}`);
-});
+run(HOST, PORT, URL, ENVIRONMENT);

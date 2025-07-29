@@ -1,12 +1,12 @@
 import express from 'express';
-import { request, gql } from 'graphql-request';
+import { gql } from 'graphql-request';
+import { type ApiError, requestGraphQL } from '../utils.js';
+import { type Type } from 'pokeapi-typescript';
 
-type Data = Record<string, Record<string, unknown>>;
-
-export function typesRoutes(app: express.Express, graphqlUrl: string) {
+export function typesRoutes(app: express.Express) {
   app.get('/api/types/:id', async (
     req: express.Request<{ id: string }>,
-    res: express.Response<Record<string, unknown>>
+    res: express.Response<Type | ApiError>
   ) => {
     const { id } = req.params;
     const name = isNaN(Number(id)) ? id : '';
@@ -24,7 +24,9 @@ export function typesRoutes(app: express.Express, graphqlUrl: string) {
       }
     `;
     try {
-      const data: Data = await request(graphqlUrl, query, queryParams);
+      const data = await requestGraphQL<{
+        pokemonType: Type
+      }>(query, queryParams);
       res.json(data.pokemonType);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });
@@ -33,7 +35,7 @@ export function typesRoutes(app: express.Express, graphqlUrl: string) {
 
   app.get('/api/types', async (
     _,
-    res: express.Response<Record<string, unknown>>
+    res: express.Response
   ) => {
     const query = gql`
       query {
@@ -45,7 +47,7 @@ export function typesRoutes(app: express.Express, graphqlUrl: string) {
     `;
 
     try {
-      const data: Data = await request(graphqlUrl, query, {});
+      const data = await requestGraphQL<{types: {id: string, name: string}[]}>(query, {});
       res.json(data.types);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });

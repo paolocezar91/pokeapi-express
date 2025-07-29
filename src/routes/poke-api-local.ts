@@ -2,7 +2,17 @@ import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import type { PaginatedResponse } from '../types';
+export interface ApiResource {
+  name: string;
+  url: string;
+}
+  
+export interface PaginatedResponse {
+  count: number;
+  next?: string | null;
+  previous?: string | null;
+  results: ApiResource[];
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -98,7 +108,7 @@ export function pokeapiRoutes(app: express.Express, resources: Record<string, st
 
   app.get('/api/v2/:resource/:id/', (
     req: express.Request<{ resource: string; id: string }>,
-    res: express.Response<Record<string, unknown>>
+    res: express.Response
   ) => {
     const { resource, id } = req.params;
     if (!resources[resource]) {
@@ -120,7 +130,7 @@ export function pokeapiRoutes(app: express.Express, resources: Record<string, st
       const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
       res.json(data);
     } catch (err) {
-      res.status(404).json({ error: 'Resource item not found' });
+      res.status(404).json({ error: 'Resource item not found', err });
     }
   });
 

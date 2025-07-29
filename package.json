@@ -1,7 +1,7 @@
 {
   "name": "pokenext-express",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
@@ -21,7 +21,9 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
-    "graphql-request": "^7.2.0"
+    "graphql-request": "^7.2.0",
+    "morgan": "^1.10.1",
+    "pokeapi-typescript": "^3.0.3"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.0",

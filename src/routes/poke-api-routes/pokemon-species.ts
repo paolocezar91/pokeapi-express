@@ -1,12 +1,14 @@
 import express from 'express';
-import { request, gql } from 'graphql-request';
+import { gql } from 'graphql-request';
+import { type ApiError, requestGraphQL } from '../utils.js';
+import { type PokemonSpecies } from 'pokeapi-typescript';
 
-type Data = Record<string, Record<string, unknown>>;
 
-export function pokemonSpeciesRoutes(app: express.Express, graphqlUrl: string) {
+
+export function pokemonSpeciesRoutes(app: express.Express) {
   app.get('/api/pokemon-species/:id', async (
     req: express.Request<{ id: string }>,
-    res: express.Response<Record<string, unknown>>
+    res: express.Response<PokemonSpecies | ApiError>
   ) => {
     const { id } = req.params;
     const name = isNaN(Number(id)) ? id : '';
@@ -54,7 +56,7 @@ export function pokemonSpeciesRoutes(app: express.Express, graphqlUrl: string) {
     `;
 
     try {
-      const data: Data = await request(graphqlUrl, query, queryParams);
+      const data = await requestGraphQL<{pokemonSpecies: PokemonSpecies}>(query, queryParams);
       res.json(data.pokemonSpecies);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });

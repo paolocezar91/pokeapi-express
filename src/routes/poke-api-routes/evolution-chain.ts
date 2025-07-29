@@ -1,12 +1,14 @@
 import express from 'express';
-import { request, gql } from 'graphql-request';
+import { gql } from 'graphql-request';
+import { type ApiError, requestGraphQL } from '../utils.js';
+import { type EvolutionChain } from 'pokeapi-typescript';
 
-type Data = Record<string, Record<string, unknown>>;
 
-export function evolutionChainRoutes(app: express.Express, graphqlUrl: string) {
+
+export function evolutionChainRoutes(app: express.Express) {
   app.get('/api/evolution-chain/:id', async (
     req: express.Request<{ id: string }>,
-    res: express.Response<Record<string, unknown>>
+    res: express.Response<EvolutionChain | ApiError>
   ) => {
     const { id } = req.params;
     const queryParams = { id: Number(id) }
@@ -98,7 +100,7 @@ export function evolutionChainRoutes(app: express.Express, graphqlUrl: string) {
       }`;
 
     try {
-      const data: Data = await request(graphqlUrl, query, queryParams);
+      const data = await requestGraphQL<{evolutionChain: EvolutionChain}>(query, queryParams);
       res.json(data.evolutionChain);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });

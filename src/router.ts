@@ -8,7 +8,9 @@ import { typesRoutes } from './routes/poke-api-routes/types.js';
 import { movesRoutes } from './routes/poke-api-routes/moves.js';
 import { evolutionChainRoutes } from './routes/poke-api-routes/evolution-chain.js';
 import { abiltiesRoutes } from './routes/poke-api-routes/abilities.js';
-const graphqlUrl = process.env.GRAPHQL_URL;
+import { machinesRoutes } from './routes/poke-api-routes/machines.js';
+
+
 
 export const setRoutes = (
   app: express.Express,
@@ -16,13 +18,14 @@ export const setRoutes = (
   host: string
 ) => {
   pokeapiRoutes(app, resources, host);
-  pokemonRoutes(app, graphqlUrl);
-  pokemonSpeciesRoutes(app, graphqlUrl);
-  typesRoutes(app, graphqlUrl);
-  movesRoutes(app, graphqlUrl);
-  evolutionChainRoutes(app, graphqlUrl);
-  userRoutes(app, graphqlUrl);
-  userSettingsRoutes(app, graphqlUrl);
-  abiltiesRoutes(app, graphqlUrl);
+  pokemonRoutes(app);
+  pokemonSpeciesRoutes(app);
+  typesRoutes(app);
+  movesRoutes(app);
+  evolutionChainRoutes(app);
+  userRoutes(app);
+  userSettingsRoutes(app);
+  abiltiesRoutes(app);
+  machinesRoutes(app);
   return app;
 };

@@ -1,12 +1,14 @@
 import express from 'express';
-import { request, gql } from 'graphql-request';
+import { gql } from 'graphql-request';
+import { type ApiError, requestGraphQL } from '../utils.js';
+import { type Ability } from 'pokeapi-typescript';
 
-type Data = Record<string, Record<string, unknown>>;
 
-export function abiltiesRoutes(app: express.Express, graphqlUrl: string) {
+
+export function abiltiesRoutes(app: express.Express) {
   app.get('/api/abilities/:id', async (
     req: express.Request<{ id: string }>,
-    res: express.Response<Record<string, unknown>>
+    res: express.Response<Ability | ApiError>
   ) => {
     const { id } = req.params;
     const name = isNaN(Number(id)) ? id : '';
@@ -29,7 +31,7 @@ export function abiltiesRoutes(app: express.Express, graphqlUrl: string) {
     `;
 
     try {
-      const data: Data = await request(graphqlUrl, query, queryParams);
+      const data = await requestGraphQL<{abilityById: Ability}>(query, queryParams);
       res.json(data.abilityById);
     } catch (err) {
       res.status(500).json({ error: 'GraphQL error', err });
