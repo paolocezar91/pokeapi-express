@@ -4,7 +4,7 @@ import { setRoutes } from './router.js';
 import cors from 'cors';
 import morgan from  'morgan';
 import dotenv from 'dotenv';
-dotenv.config({ path: ".env.test" });
+dotenv.config({ path: ".env" });
 
 const app = express();
 app.use(express.json());

@@ -9,15 +9,14 @@ import { movesRoutes } from './routes/poke-api-routes/moves.js';
 import { evolutionChainRoutes } from './routes/poke-api-routes/evolution-chain.js';
 import { abiltiesRoutes } from './routes/poke-api-routes/abilities.js';
 import { machinesRoutes } from './routes/poke-api-routes/machines.js';
-
-
+import { moveTargetRoutes } from './routes/poke-api-routes/move-target.js';
 
 export const setRoutes = (
   app: express.Express,
   resources: Record<string, string>,
   host: string
 ) => {
-  pokeapiRoutes(app, resources, host);
+  // pokeapiRoutes(app, resources, host);
   pokemonRoutes(app);
   pokemonSpeciesRoutes(app);
   typesRoutes(app);
@@ -27,5 +26,6 @@ export const setRoutes = (
   userSettingsRoutes(app);
   abiltiesRoutes(app);
   machinesRoutes(app);
+  moveTargetRoutes(app)
   return app;
 };
