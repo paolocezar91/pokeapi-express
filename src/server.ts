@@ -15,8 +15,8 @@ function run(HOST, PORT, URL, ENVIRONMENT) {
     app.use(morgan('combined'));
   }
   
-  const resources = getResources();
-  setRoutes(app, resources, URL);
+  // const resources = getResources();
+  setRoutes(app, {}, URL);
   
   app.listen(PORT, HOST, () => {
     console.log(`PokeAPI server running on ${URL} in ${ENVIRONMENT}`);
