@@ -5,7 +5,8 @@ FROM node:20
 WORKDIR /app
 
 # Copy package files and install dependencies
-COPY package.json package-lock.json tsconfig.json ./
+COPY package.json package-lock.json tsconfig.json .env.sandbox ./
+RUN mv .env.sandbox .env
 RUN npm ci
 # Copy the rest of the source code
 COPY ./src ./src

@@ -9,7 +9,6 @@ COPY package.json package-lock.json tsconfig.json ./
 RUN npm ci
 # Copy the rest of the source code
 COPY ./src ./src
-RUN npm run build
 
 # Expose the port your Express server uses (e.g., 3000)
 EXPOSE 3000

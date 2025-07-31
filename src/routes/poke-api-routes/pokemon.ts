@@ -143,7 +143,7 @@ export function pokemonRoutes(app: express.Express) {
     const { ids = '' } = req.query;
 
     if(!ids) {
-      const { limit = 20, offset = 0, name = '', types = '' } = req.query;
+      const { limit = 20, offset = 0, name = '', types = '', id_limit = 1025 } = req.query;
       const query = gql`
         query ($limit: Int, $offset: Int, $name: String, $types: String) {
           pokemons(limit: $limit, offset: $offset, name: $name, types: $types) {
@@ -169,7 +169,8 @@ export function pokemonRoutes(app: express.Express) {
         limit: Number(limit),
         offset: Number(offset),
         name,
-        types
+        types,
+        id_limit
       };
   
       try {
