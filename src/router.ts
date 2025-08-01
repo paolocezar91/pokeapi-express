@@ -10,6 +10,7 @@ import { evolutionChainRoutes } from './routes/poke-api-routes/evolution-chain.j
 import { abiltiesRoutes } from './routes/poke-api-routes/abilities.js';
 import { machinesRoutes } from './routes/poke-api-routes/machines.js';
 import { moveTargetRoutes } from './routes/poke-api-routes/move-target.js';
+import { pokemonFormRoutes } from './routes/poke-api-routes/pokemon-form.js';
 
 export const setRoutes = (
   app: express.Express,
@@ -26,6 +27,7 @@ export const setRoutes = (
   userSettingsRoutes(app);
   abiltiesRoutes(app);
   machinesRoutes(app);
-  moveTargetRoutes(app)
+  moveTargetRoutes(app);
+  pokemonFormRoutes(app);
   return app;
 };
